@@ -1,0 +1,235 @@
+<html>
+	<head>
+		<script>
+			function pickFact() {
+				var radMult = document.getElementById("radMult");
+				var radAdd = document.getElementById("radAdd");
+				var radSub = document.getElementById("radSub");
+				var radDiv = document.getElementById("radDiv");
+			
+				if (radMult.checked) {
+					pickFactMult();
+					return;
+				}
+				else if (radAdd.checked) {
+					pickFactAdd();
+					return;
+				}
+				else if (radSub.checked){
+					pickFactSub();
+				}
+				else if (radDiv.checked){
+					pickFactDiv();
+				}
+				else {
+					alert('please choose one of the options');
+				}
+			}
+
+			function pickFactAdd() {
+				var num1 = Math.random()*100;
+				num1 = Math.round(num1);
+				
+				var num2 = Math.random()*100;
+				num2 = Math.round(num2);
+				showMessage(num1 + ' + ' + num2);
+			}
+			
+			function pickFactMult() {
+				var num1 = Math.random()*12;
+				num1 = Math.round(num1);
+				
+				var num2 = Math.random()*12;
+				num2 = Math.round(num2);
+				
+				showMessage(num1 + ' x ' + num2);
+			}
+			
+			function pickFactSub() {
+				var num1 = Math.random()*100;
+				num1 = Math.round(num1);
+				
+				var num2 = Math.random()*100;
+				num2 = Math.round(num2);
+				showMessage(num1 + ' - ' + num2);
+			}
+
+			function pickFactDiv() {
+				var idx1 = Math.random()*12;
+				idx1 = Math.round(idx1);
+				
+				var idx2 = Math.random()*12;
+				idx2 = Math.round(idx2);
+				
+				var numerator = idx1 * idx2;
+				var denominator = (idx2 == 0)?1:idx2;
+				
+				console.info('answer:\t' + idx1);
+				
+				var divChar = String.fromCharCode(247)
+				
+				showMessage(numerator + ' ' + divChar + ' ' + denominator);
+			}
+
+			var iCtr = 0;
+			var _timer = null;
+			var timerOn = false;
+			var _timeInMinutes = 5;
+			var _ticks = _timeInMinutes * 60;
+			
+			var _needsReset = false;
+			
+			function toggleTimer() {
+				if (timerOn) {
+					stopTimer();
+				}
+				else {
+					startTimer();
+				}
+			}
+
+			function stopTimer() {
+			// disable button
+				disableButton();
+				window.clearTimeout(_timer);
+				timerOn = false;
+			//enable button
+				enableButton();
+				setButtonLabel("Start")
+			}
+			
+			function startTimer() {
+				if (_needsReset) {
+					resetTimer();
+				}
+				timerOn = true;
+				_timer = window.setTimeout("tick()",1000);
+				setButtonLabel("Stop")
+			}
+			
+			function setButtonLabel(Label) {
+				var cmdBtn = document.getElementById("cmdBtn");
+				cmdBtn.value = Label;
+			}
+			
+			function disableButton() {
+				var cmdBtn = document.getElementById("cmdBtn");
+				cmdBtn.enabled = false;
+			}
+			
+			function enableButton() {
+				var cmdBtn = document.getElementById("cmdBtn");
+				cmdBtn.enabled = true;
+			}
+			
+			function resetTimer() {
+				_ticks = _timeInMinutes * 60;
+				_needsReset = false;
+				showTimer();
+			}
+			
+			function tick() {
+				if (!timerOn) return;
+				_ticks--;
+				var txtOut = document.getElementById("txtOut");
+				txtOut.innerText = toTimeStr();
+				
+				if (timeOver()) {
+					stopTimer();
+					_needsReset = true;
+					return;
+				}
+				else {
+					window.setTimeout("tick()",1000);
+				}
+			}
+			
+			function setOut(str) {
+				var txtOut = document.getElementById("txtOut");
+				txtOut.innerText = str;
+			}
+			
+			function showTime() {
+				var dt = new Date();
+				
+				var h = dt.getHours() // Returns the hour of the day (0-23).
+				if (h>=12) h-= 12;
+				
+				var m = dt.getMinutes() // Returns the minute (0-59).
+				m = ('0' + m).substring(0,2);
+				var s = dt.getSeconds() //- Returns the second (0-59).
+				var ss = dt.getMilliseconds() //- Returns the milliseconds (0-999).
+				
+				var myTime = h + ':' + m + ':' + s + ':' + ss;
+				alert(myTime);
+			}
+			
+			function showTimer() {
+				var txtOut = document.getElementById("txtOut");
+				txtOut.innerText = toTimeStr();
+			}
+			
+			function timeOver() {
+				return (_ticks <= 0);
+			}
+			
+			function toTimeStr() {
+				var mins = Math.floor(_ticks/60);
+				var seconds = _ticks % 60;
+				
+				var secondsStr = '00' + seconds;
+				secondsStr = secondsStr.substr(secondsStr.length - 2,2);
+				
+				var fullTime = mins + ':' + secondsStr;
+				return fullTime;
+			}
+			
+			function rightStr(str) {
+				return str.substring(str.length-2, str.length);
+			}
+			
+			function showMessage(str) {
+				var txtExpr = document.getElementById("txtExpr");
+				txtExpr.innerText = str;
+			}
+		</script>
+		<style>
+			.text {
+				font-family: Verdana;
+				font-size:14pt;
+			}
+			.timer {
+				border: solid 1px #CCC;
+				width: 100px;
+				padding-left:10px;
+			}
+			
+			.label {
+				font-family: Verdana;
+				font-size:10pt;
+			}
+			
+			.expression {
+				font-family: Verdana;
+				font-size:132pt;
+				position:absolute;
+				top:100px;
+				left:250px;
+			}
+		</style>
+	</head>
+	<body>
+		<input id="radMult" type="radio" name="choice" value="multiplication" /><span class="label">Multiplication</span><br/>
+		<input id="radAdd" type="radio" name="choice" value="addition" /><span class="label">Addition</span><br/>
+		<input id="radSub" type="radio" name="choice" value="subtraction" /><span class="label">Subtraction</span><br/>
+		<input id="radDiv" type="radio" name="choice" value="division" /><span class="label">Division</span><br/>
+		
+		<input type="button" value="Go" onclick="pickFact()" />
+		<input id="cmdBtn" type="button" value="Start" onclick="toggleTimer()" />
+		<input id="cmdBtn" type="button" value="Reset" onclick="resetTimer()" />
+		<div id="txtFact" class="text"></div>
+		<div id="txtOut" class="text timer">5:00</div>
+		<div id="txtExpr" class="expression">A+B=C</div>
+	</body>
+
+</html>
